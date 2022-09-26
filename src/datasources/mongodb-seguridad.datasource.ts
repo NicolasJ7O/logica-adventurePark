@@ -4,11 +4,11 @@ import {juggler} from '@loopback/repository';
 const config = {
   name: 'mongodbSeguridad',
   connector: 'mongodb',
-  url: 'mongodb+srv://Zeppelin:<jZjMpkeU96unesP1>@cluster0.nheotad.mongodb.net/?retryWrites=true&w=majority',
+  url: 'mongodb+srv://Zeppelin:ihymvRSIVupxqDYP@cluster0.nheotad.mongodb.net/?retryWrites=true&w=majority',
   host: 'localhost',
   port: 27017,
   user: 'Zeppelin',
-  password: 'jZjMpkeU96unesP1',
+  password: 'ihymvRSIVupxqDYP',
   database: 'seguridadAdventurePark',
   useNewUrlParser: true
 };
