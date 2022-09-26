@@ -2,149 +2,109 @@ import {
   Count,
   CountSchema,
   Filter,
-  FilterExcludingWhere,
   repository,
   Where,
 } from '@loopback/repository';
-import {
-  post,
-  param,
+  import {
+  del,
   get,
   getModelSchemaRef,
+  getWhereSchemaFor,
+  param,
   patch,
-  put,
-  del,
+  post,
   requestBody,
-  response,
 } from '@loopback/rest';
-import {PlanAtraccion} from '../models';
-import {PlanAtraccionRepository} from '../repositories';
+import {
+Plan,
+PlanAtraccion,
+Atraccion,
+} from '../models';
+import {PlanRepository} from '../repositories';
 
 export class PlanAtraccionController {
   constructor(
-    @repository(PlanAtraccionRepository)
-    public planAtraccionRepository : PlanAtraccionRepository,
-  ) {}
+    @repository(PlanRepository) protected planRepository: PlanRepository,
+  ) { }
 
-  @post('/plan-atraccions')
-  @response(200, {
-    description: 'PlanAtraccion model instance',
-    content: {'application/json': {schema: getModelSchemaRef(PlanAtraccion)}},
-  })
-  async create(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(PlanAtraccion, {
-            title: 'NewPlanAtraccion',
-            exclude: ['id'],
-          }),
-        },
-      },
-    })
-    planAtraccion: Omit<PlanAtraccion, 'id'>,
-  ): Promise<PlanAtraccion> {
-    return this.planAtraccionRepository.create(planAtraccion);
-  }
-
-  @get('/plan-atraccions/count')
-  @response(200, {
-    description: 'PlanAtraccion model count',
-    content: {'application/json': {schema: CountSchema}},
-  })
-  async count(
-    @param.where(PlanAtraccion) where?: Where<PlanAtraccion>,
-  ): Promise<Count> {
-    return this.planAtraccionRepository.count(where);
-  }
-
-  @get('/plan-atraccions')
-  @response(200, {
-    description: 'Array of PlanAtraccion model instances',
-    content: {
-      'application/json': {
-        schema: {
-          type: 'array',
-          items: getModelSchemaRef(PlanAtraccion, {includeRelations: true}),
+  @get('/plans/{id}/atraccions', {
+    responses: {
+      '200': {
+        description: 'Array of Plan has many Atraccion through PlanAtraccion',
+        content: {
+          'application/json': {
+            schema: {type: 'array', items: getModelSchemaRef(Atraccion)},
+          },
         },
       },
     },
   })
   async find(
-    @param.filter(PlanAtraccion) filter?: Filter<PlanAtraccion>,
-  ): Promise<PlanAtraccion[]> {
-    return this.planAtraccionRepository.find(filter);
+    @param.path.number('id') id: number,
+    @param.query.object('filter') filter?: Filter<Atraccion>,
+  ): Promise<Atraccion[]> {
+    return this.planRepository.atraccions(id).find(filter);
   }
 
-  @patch('/plan-atraccions')
-  @response(200, {
-    description: 'PlanAtraccion PATCH success count',
-    content: {'application/json': {schema: CountSchema}},
-  })
-  async updateAll(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(PlanAtraccion, {partial: true}),
-        },
-      },
-    })
-    planAtraccion: PlanAtraccion,
-    @param.where(PlanAtraccion) where?: Where<PlanAtraccion>,
-  ): Promise<Count> {
-    return this.planAtraccionRepository.updateAll(planAtraccion, where);
-  }
-
-  @get('/plan-atraccions/{id}')
-  @response(200, {
-    description: 'PlanAtraccion model instance',
-    content: {
-      'application/json': {
-        schema: getModelSchemaRef(PlanAtraccion, {includeRelations: true}),
+  @post('/plans/{id}/atraccions', {
+    responses: {
+      '200': {
+        description: 'create a Atraccion model instance',
+        content: {'application/json': {schema: getModelSchemaRef(Atraccion)}},
       },
     },
   })
-  async findById(
-    @param.path.number('id') id: number,
-    @param.filter(PlanAtraccion, {exclude: 'where'}) filter?: FilterExcludingWhere<PlanAtraccion>
-  ): Promise<PlanAtraccion> {
-    return this.planAtraccionRepository.findById(id, filter);
+  async create(
+    @param.path.number('id') id: typeof Plan.prototype.id,
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(Atraccion, {
+            title: 'NewAtraccionInPlan',
+            exclude: ['id'],
+          }),
+        },
+      },
+    }) atraccion: Omit<Atraccion, 'id'>,
+  ): Promise<Atraccion> {
+    return this.planRepository.atraccions(id).create(atraccion);
   }
 
-  @patch('/plan-atraccions/{id}')
-  @response(204, {
-    description: 'PlanAtraccion PATCH success',
+  @patch('/plans/{id}/atraccions', {
+    responses: {
+      '200': {
+        description: 'Plan.Atraccion PATCH success count',
+        content: {'application/json': {schema: CountSchema}},
+      },
+    },
   })
-  async updateById(
+  async patch(
     @param.path.number('id') id: number,
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(PlanAtraccion, {partial: true}),
+          schema: getModelSchemaRef(Atraccion, {partial: true}),
         },
       },
     })
-    planAtraccion: PlanAtraccion,
-  ): Promise<void> {
-    await this.planAtraccionRepository.updateById(id, planAtraccion);
+    atraccion: Partial<Atraccion>,
+    @param.query.object('where', getWhereSchemaFor(Atraccion)) where?: Where<Atraccion>,
+  ): Promise<Count> {
+    return this.planRepository.atraccions(id).patch(atraccion, where);
   }
 
-  @put('/plan-atraccions/{id}')
-  @response(204, {
-    description: 'PlanAtraccion PUT success',
+  @del('/plans/{id}/atraccions', {
+    responses: {
+      '200': {
+        description: 'Plan.Atraccion DELETE success count',
+        content: {'application/json': {schema: CountSchema}},
+      },
+    },
   })
-  async replaceById(
+  async delete(
     @param.path.number('id') id: number,
-    @requestBody() planAtraccion: PlanAtraccion,
-  ): Promise<void> {
-    await this.planAtraccionRepository.replaceById(id, planAtraccion);
-  }
-
-  @del('/plan-atraccions/{id}')
-  @response(204, {
-    description: 'PlanAtraccion DELETE success',
-  })
-  async deleteById(@param.path.number('id') id: number): Promise<void> {
-    await this.planAtraccionRepository.deleteById(id);
+    @param.query.object('where', getWhereSchemaFor(Atraccion)) where?: Where<Atraccion>,
+  ): Promise<Count> {
+    return this.planRepository.atraccions(id).delete(where);
   }
 }

@@ -20,6 +20,10 @@ export class Compra extends Entity {
   })
   descripcion?: string;
 
+  @property({
+    type: 'number',
+  })
+  reservaId?: number;
 
   constructor(data?: Partial<Compra>) {
     super(data);

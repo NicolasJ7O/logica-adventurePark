@@ -9,6 +9,15 @@ export class PlanAtraccion extends Entity {
   })
   id?: number;
 
+  @property({
+    type: 'number',
+  })
+  atraccionId?: number;
+
+  @property({
+    type: 'number',
+  })
+  planId?: number;
 
   constructor(data?: Partial<PlanAtraccion>) {
     super(data);
